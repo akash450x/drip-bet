@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>drip bet · sleek sports & esports</title>
+  <!-- Inter font (SF Pro style) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Lucide icons (via CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* ----- RESET & GLOBALS ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #09090B;
+      color: #FFFFFF;
+      line-height: 1.4;
+      font-weight: 400;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Desktop container frame – mobile app feel */
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 900px;
+      background: #09090B;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      isolation: isolate;
+    }
+
+    @media (min-width: 480px) {
+      body {
+        background: #040405;
+        padding: 20px;
+      }
+      .app-container {
+        border-radius: 44px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        height: 90vh;
+        max-height: 880px;
+        margin: auto;
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.02);
+      }
+    }
+
+    /* Ambient radial glow */
+    .ambient-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      border-radius: inherit;
+    }
+    .ambient-glow::before {
+      content: '';
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(0, 245, 160, 0.12) 0%, transparent 70%);
+      top: -80px;
+      right: -60px;
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+    .ambient-glow::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0, 245, 160, 0.06) 0%, transparent 70%);
+      bottom: -100px;
+      left: -80px;
+      border-radius: 50%;
+      filter: blur(50px);
+    }
+
+    /* ----- MAIN SCROLL AREA (HEADER + CONTENT) ----- */
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 16px 110px 16px; /* bottom space for dock */
+      scrollbar-width: none;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .main-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ----- STICKY HEADER (inside scroll? but we want it sticky) Actually we'll make header sticky relative to scroll container. Using position: sticky; top:0 ----- */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 -16px 0 -16px;
+      padding: 12px 16px 8px 16px;
+      background: rgba(9, 9, 11, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+    }
+    .logo span {
+      color: #00F5A0;
+      margin-left: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wallet-pill {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 40px;
+      padding: 6px 8px 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      transition: all 0.15s ease;
+    }
+    .wallet-pill .balance {
+      letter-spacing: -0.2px;
+    }
+    .wallet-pill .deposit-btn {
+      background: #00F5A0;
+      color: #09090B;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s;
+      box-shadow: 0 0 12px rgba(0, 245, 160, 0.3);
+      padding: 0;
+      line-height: 1;
+    }
+    .wallet-pill .deposit-btn:active {
+      transform: scale(0.92);
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #2a2a30, #16161a);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #00F5A0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .avatar i {
+      width: 18px;
+      height: 18px;
+      stroke-width: 1.75;
+    }
+
+    /* ----- SEGMENTED TABS (sliding pill) ----- */
+    .tabs-container {
+      position: relative;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 4px 0 8px 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      margin-top: 4px;
+    }
+    .tabs-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-pill {
+      position: relative;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      color: #8E8E93;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      z-index: 2;
+      letter-spacing: -0.2px;
+      flex-shrink: 0;
+    }
+    .tab-pill.active {
+      color: #09090B;
+      font-weight: 600;
+    }
+
+    .sliding-indicator {
+      position: absolute;
+      top: 4px;
+      height: 36px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ----- HERO CAROUSEL (horizontal scroll) ----- */
+    .hero-carousel {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 0 8px 0;
+      scrollbar-width: none;
+      margin: 0 -4px;
+      scroll-snap-type: x mandatory;
+    }
+    .hero-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hero-card {
+      flex: 0 0 280px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-snap-align: start;
+      transition: transform 0.2s ease, border-color 0.2s;
+    }
+    .hero-card:hover {
+      border-color: rgba(0, 245, 160, 0.3);
+    }
+
+    .hero-league {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #00F5A0;
+      font-weight: 600;
+    }
+
+    .hero-teams {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 6px 0;
+    }
+
+    .team-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .team-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #00F5A0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .vs {
+      color: #8E8E93;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .hero-odds {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .odds-pill {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 40px;
+      padding: 6px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: 0.2px;
+    }
+    .odds-pill:active {
+      transform: scale(0.95);
+      background: rgba(0, 245, 160, 0.15);
+      border-color: #00F5A0;
+      color: #00F5A0;
+    }
+    .odds-pill.selected {
+      background: #00F5A0;
+      color: #09090B;
+      border-color: #00F5A0;
+      font-weight: 700;
+    }
+
+    /* ----- MATCH CARDS GRID (minimalist glass) ----- */
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #fff;
+      margin: 4px 0 2px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title i {
+      width: 18px;
+      height: 18px;
+      stroke-width: 1.75;
+      color: #8E8E93;
+    }
+
+    .match-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .match-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 14px;
+      transition: border-color 0.2s ease, background 0.2s;
+    }
+    .match-card:hover {
+      border-color: rgba(0, 245, 160, 0.2);
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #8E8E93;
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      color: #00F5A0;
+    }
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: #00F5A0;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00F5A0;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .match-teams {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    .team-row .team-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #00F5A0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .match-odds {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .odds-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .odds-btn:active {
+      transform: scale(0.96);
+    }
+    .odds-btn.selected {
+      background: #00F5A0;
+      color: #09090B;
+      border-color: #00F5A0;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(0, 245, 160, 0.2);
+    }
+    .odds-btn .odds-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 400;
+      color: #8E8E93;
+      margin-top: 2px;
+    }
+    .odds-btn.selected .odds-label {
+      color: #09090B;
+      opacity: 0.7;
+    }
+
+    /* ----- FLOATING BOTTOM DOCK (glass pill) ----- */
+    .bottom-dock {
+      position: absolute;
+      bottom: 20px;
+      left: 16px;
+      right: 16px;
+      background: rgba(18, 18, 20, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 245, 160, 0.05);
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+    }
+
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: transparent;
+      border: none;
+      color: #8E8E93;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 30px;
+      transition: all 0.2s ease;
+      position: relative;
+      flex: 1;
+    }
+    .dock-item i {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.75;
+      transition: color 0.2s;
+    }
+    .dock-item.active {
+      color: #00F5A0;
+    }
+    .dock-item.active i {
+      color: #00F5A0;
+      filter: drop-shadow(0 0 6px rgba(0, 245, 160, 0.5));
+    }
+
+    .dock-item.bet-slip {
+      background: rgba(0, 245, 160, 0.15);
+      border-radius: 40px;
+      margin: 0 4px;
+      position: relative;
+    }
+    .dock-item.bet-slip i {
+      color: #00F5A0;
+    }
+    .bet-badge {
+      position: absolute;
+      top: -4px;
+      right: 0px;
+      background: #00F5A0;
+      color: #09090B;
+      font-size: 10px;
+      font-weight: 700;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(0, 245, 160, 0.5);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ----- BET SLIP DRAWER (slide-up) ----- */
+    .drawer-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+    }
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .bet-slip-drawer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(18, 18, 22, 0.95);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border-top-left-radius: 32px;
+      border-top-right-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: none;
+      padding: 16px 20px 24px 20px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 101;
+      max-height: 80%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+    }
+    .bet-slip-drawer.open {
+      transform: translateY(0);
+    }
+
+    .drag-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      margin: 0 auto 16px auto;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .drawer-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    .close-drawer {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .sliding-toggle {
+      display: flex;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 40px;
+      padding: 3px;
+      position: relative;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .toggle-option {
+      flex: 1;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #8E8E93;
+      background: transparent;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      z-index: 2;
+      transition: color 0.2s;
+    }
+    .toggle-option.active {
+      color: #09090B;
+    }
+    .toggle-indicator {
+      position: absolute;
+      top: 3px;
+      height: calc(100% - 6px);
+      background: #00F5A0;
+      border-radius: 40px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 1;
+      width: calc(50% - 3px);
+      left: 3px;
+    }
+
+    .bet-selections {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      scrollbar-width: none;
+    }
+    .bet-selections::-webkit-scrollbar {
+      display: none;
+    }
+
+    .selection-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .selection-item .match-info {
+      color: #8E8E93;
+      font-size: 11px;
+    }
+    .selection-item .odds-value {
+      color: #00F5A0;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .remove-selection {
+      background: none;
+      border: none;
+      color: #8E8E93;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-stakes {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .stake-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-variant-numeric: tabular-nums;
+    }
+    .stake-chip:active {
+      transform: scale(0.94);
+      background: rgba(0, 245, 160, 0.2);
+      border-color: #00F5A0;
+    }
+
+    .payout-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 8px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .payout-label {
+      color: #8E8E93;
+      font-size: 14px;
+    }
+    .payout-amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: #00F5A0;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.5px;
+    }
+
+    .place-bet-btn {
+      background: #00F5A0;
+      border: none;
+      border-radius: 40px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #09090B;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 8px 20px rgba(0, 245, 160, 0.25);
+      letter-spacing: -0.2px;
+    }
+    .place-bet-btn:active {
+      transform: scale(0.97);
+      background: #00cc86;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none !important;
+    }
+
+    .empty-state {
+      color: #8E8E93;
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* toast */
+    .toast {
+      position: absolute;
+      bottom: 100px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0, 245, 160, 0.95);
+      color: #09090B;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 12px 20px;
+      border-radius: 40px;
+      text-align: center;
+      z-index: 200;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(0, 245, 160, 0.4);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="ambient-glow"></div>
+
+    <!-- MAIN SCROLL AREA -->
+    <div class="main-scroll" id="mainScroll">
+      <!-- STICKY HEADER -->
+      <div class="sticky-header">
+        <div class="logo">drip<span>bet</span></div>
+        <div class="header-right">
+          <div class="wallet-pill">
+            <span class="balance" id="walletBalance">$1,250.00</span>
+            <button class="deposit-btn" id="depositBtn" aria-label="Deposit">+</button>
+          </div>
+          <div class="avatar" id="profileBtn">
+            <i data-lucide="user"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEGMENTED TABS with sliding indicator -->
+      <div class="tabs-container" id="tabsContainer">
+        <div class="sliding-indicator" id="slidingIndicator"></div>
+        <button class="tab-pill active" data-tab="All">All</button>
+        <button class="tab-pill" data-tab="Live">Live</button>
+        <button class="tab-pill" data-tab="Football">Football</button>
+        <button class="tab-pill" data-tab="Cricket">Cricket</button>
+        <button class="tab-pill" data-tab="Esports">Esports</button>
+        <button class="tab-pill" data-tab="Trending">Trending</button>
+      </div>
+
+      <!-- HERO CAROUSEL -->
+      <div class="hero-carousel" id="heroCarousel">
+        <!-- card 1 -->
+        <div class="hero-card">
+          <div class="hero-league">Premier League · LIVE</div>
+          <div class="hero-teams">
+            <div class="team-badge"><div class="team-icon">MC</div> Man City</div>
+            <span class="vs">vs</span>
+            <div class="team-badge"><div class="team-icon">AR</div> Arsenal</div>
+          </div>
+          <div class="hero-odds">
+            <div class="odds-pill" data-odd="1" data-team="Man City">1.85</div>
+            <div class="odds-pill" data-odd="X" data-team="Draw">3.40</div>
+            <div class="odds-pill" data-odd="2" data-team="Arsenal">4.20</div>
+          </div>
+        </div>
+        <!-- card 2 -->
+        <div class="hero-card">
+          <div class="hero-league">IPL · LIVE</div>
+          <div class="hero-teams">
+            <div class="team-badge"><div class="team-icon">MI</div> Mumbai</div>
+            <span class="vs">vs</span>
+            <div class="team-badge"><div class="team-icon">CSK</div> Chennai</div>
+          </div>
+          <div class="hero-odds">
+            <div class="odds-pill" data-odd="1" data-team="Mumbai">1.72</div>
+            <div class="odds-pill" data-odd="2" data-team="Chennai">2.10</div>
+          </div>
+        </div>
+        <!-- card 3 -->
+        <div class="hero-card">
+          <div class="hero-league">Esports · LoL</div>
+          <div class="hero-teams">
+            <div class="team-badge"><div class="team-icon">T1</div> T1</div>
+            <span class="vs">vs</span>
+            <div class="team-badge"><div class="team-icon">GEN</div> Gen.G</div>
+          </div>
+          <div class="hero-odds">
+            <div class="odds-pill" data-odd="1" data-team="T1">2.15</div>
+            <div class="odds-pill" data-odd="2" data-team="Gen.G">1.68</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MATCH SECTION -->
+      <div class="section-title"><i data-lucide="flame"></i> Popular Matches</div>
+      <div class="match-grid" id="matchGrid">
+        <!-- match 1 -->
+        <div class="match-card" data-league="Football" data-live="true">
+          <div class="match-header">
+            <span>Premier League</span>
+            <span class="live-indicator"><span class="live-dot"></span> 67'</span>
+          </div>
+          <div class="match-teams">
+            <div class="team-row"><div class="team-icon">LIV</div> Liverpool</div>
+            <div class="team-row"><div class="team-icon">MCI</div> Man City</div>
+          </div>
+          <div class="match-odds">
+            <div class="odds-btn" data-odd="1" data-team="Liverpool" data-match="Liverpool vs Man City">1.92 <span class="odds-label">1</span></div>
+            <div class="odds-btn" data-odd="X" data-team="Draw" data-match="Liverpool vs Man City">3.50 <span class="odds-label">X</span></div>
+            <div class="odds-btn" data-odd="2" data-team="Man City" data-match="Liverpool vs Man City">3.80 <span class="odds-label">2</span></div>
+          </div>
+        </div>
+        <!-- match 2 -->
+        <div class="match-card" data-league="Cricket" data-live="true">
+          <div class="match-header">
+            <span>IPL 2025</span>
+            <span class="live-indicator"><span class="live-dot"></span> 14.2 ov</span>
+          </div>
+          <div class="match-teams">
+            <div class="team-row"><div class="team-icon">RCB</div> Bangalore</div>
+            <div class="team-row"><div class="team-icon">KKR</div> Kolkata</div>
+          </div>
+          <div class="match-odds">
+            <div class="odds-btn" data-odd="1" data-team="Bangalore" data-match="RCB vs KKR">1.65 <span class="odds-label">1</span></div>
+            <div class="odds-btn" data-odd="2" data-team="Kolkata" data-match="RCB vs KKR">2.20 <span class="odds-label">2</span></div>
+          </div>
+        </div>
+        <!-- match 3 -->
+        <div class="match-card" data-league="Esports" data-live="true">
+          <div class="match-header">
+            <span>Valorant · VCT</span>
+            <span class="live-indicator"><span class="live-dot"></span> Map 2</span>
+          </div>
+          <div class="match-teams">
+            <div class="team-row"><div class="team-icon">SEN</div> Sentinels</div>
+            <div class="team-row"><div class="team-icon">FNC</div> Fnatic</div>
+          </div>
+          <div class="match-odds">
+            <div class="odds-btn" data-odd="1" data-team="Sentinels" data-match="SEN vs FNC">2.05 <span class="odds-label">1</span></div>
+            <div class="odds-btn" data-odd="2" data-team="Fnatic" data-match="SEN vs FNC">1.75 <span class="odds-label">2</span></div>
+          </div>
+        </div>
+        <!-- match 4 – trending football -->
+        <div class="match-card" data-league="Football" data-live="false">
+          <div class="match-header">
+            <span>La Liga</span>
+            <span>Tomorrow 21:00</span>
+          </div>
+          <div class="match-teams">
+            <div class="team-row"><div class="team-icon">RMA</div> Real Madrid</div>
+            <div class="team-row"><div class="team-icon">BAR</div> Barcelona</div>
+          </div>
+          <div class="match-odds">
+            <div class="odds-btn" data-odd="1" data-team="Real Madrid" data-match="Real Madrid vs Barcelona">2.30 <span class="odds-label">1</span></div>
+            <div class="odds-btn" data-odd="X" data-team="Draw" data-match="Real Madrid vs Barcelona">3.25 <span class="odds-label">X</span></div>
+            <div class="odds-btn" data-odd="2" data-team="Barcelona" data-match="Real Madrid vs Barcelona">3.10 <span class="odds-label">2</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOATING BOTTOM DOCK -->
+    <div class="bottom-dock" id="bottomDock">
+      <button class="dock-item active" data-dock="home"><i data-lucide="home"></i><span>Home</span></button>
+      <button class="dock-item" data-dock="live"><i data-lucide="radio"></i><span>Live</span></button>
+      <button class="dock-item bet-slip" data-dock="betslip" id="betSlipDockBtn"><i data-lucide="receipt"></i><span>Slip</span><span class="bet-badge" id="betBadge">0</span></button>
+      <button class="dock-item" data-dock="mybets"><i data-lucide="ticket"></i><span>My Bets</span></button>
+      <button class="dock-item" data-dock="social"><i data-lucide="users"></i><span>Social</span></button>
+    </div>
+
+    <!-- BET SLIP DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <div class="bet-slip-drawer" id="betSlipDrawer">
+      <div class="drag-handle"></div>
+      <div class="drawer-header">
+        <h3>Bet Slip</h3>
+        <button class="close-drawer" id="closeDrawerBtn"><i data-lucide="x"></i></button>
+      </div>
+      <div class="sliding-toggle" id="betModeToggle">
+        <div class="toggle-indicator" id="toggleIndicator"></div>
+        <button class="toggle-option active" data-mode="single">Single</button>
+        <button class="toggle-option" data-mode="parlay">Parlay</button>
+      </div>
+      <div class="bet-selections" id="betSelections">
+        <!-- dynamically added -->
+        <div class="empty-state">No picks yet — tap odds to add</div>
+      </div>
+      <div class="quick-stakes">
+        <div class="stake-chip" data-stake="10">$10</div>
+        <div class="stake-chip" data-stake="25">$25</div>
+        <div class="stake-chip" data-stake="50">$50</div>
+        <div class="stake-chip" data-stake="100">$100</div>
+        <div class="stake-chip" data-stake="max">Max</div>
+      </div>
+      <div class="payout-row">
+        <span class="payout-label">Potential payout</span>
+        <span class="payout-amount" id="potentialPayout">$0.00</span>
+      </div>
+      <button class="place-bet-btn" id="placeBetBtn">Place Bet</button>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">Bet placed! Good luck 🍀</div>
+  </div>
+
+  <script>
+    (function() {
+      // ------- STATE -------
+      let selectedBets = []; // { match, team, odd, oddsValue, oddsLabel }
+      let currentMode = 'single'; // 'single' or 'parlay'
+      let currentStake = 0;
+      let walletBalance = 1250.00;
+
+      // ------- UTILS -------
+      const updateWalletDisplay = () => {
+        document.getElementById('walletBalance').textContent = `$${walletBalance.toFixed(2)}`;
+      };
+
+      const showToast = (msg) => {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      };
+
+      // ------- RENDER BET SLIP BADGE & SELECTIONS -------
+      const betBadge = document.getElementById('betBadge');
+      const betSelections = document.getElementById('betSelections');
+      const potentialPayoutEl = document.getElementById('potentialPayout');
+
+      function updateBetSlipUI() {
+        // badge count
+        betBadge.textContent = selectedBets.length;
+        betBadge.style.display = selectedBets.length > 0 ? 'flex' : 'none';
+
+        // selections list
+        if (selectedBets.length === 0) {
+          betSelections.innerHTML = '<div class="empty-state">No picks yet — tap odds to add</div>';
+        } else {
+          betSelections.innerHTML = selectedBets.map((bet, index) => `
+            <div class="selection-item">
+              <div>
+                <div style="font-weight:500;">${bet.team}</div>
+                <div class="match-info">${bet.match} · ${bet.oddsLabel}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="odds-value">${bet.oddsValue.toFixed(2)}</span>
+                <button class="remove-selection" data-index="${index}"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
+              </div>
+            </div>
+          `).join('');
+          // re-init icons
+          lucide.createIcons();
+        }
+
+        // payout calculation
+        let potential = 0;
+        if (selectedBets.length > 0 && currentStake > 0) {
+          if (currentMode === 'single') {
+            // sum of (stake * odds) for each bet? In real single, each bet has stake. Here we treat total stake as split equally? For simplicity we show total potential = sum(stake_per_bet * odds)
+            const stakePerBet = currentStake / selectedBets.length;
+            potential = selectedBets.reduce((acc, bet) => acc + (stakePerBet * bet.oddsValue), 0);
+          } else {
+            // parlay: multiply odds
+            const parlayOdds = selectedBets.reduce((acc, bet) => acc * bet.oddsValue, 1);
+            potential = currentStake * parlayOdds;
+          }
+        }
+        potentialPayoutEl.textContent = `$${potential.toFixed(2)}`;
+      }
+
+      // ------- UPDATE SELECTED ODDS BUTTON HIGHLIGHTS -------
+      function syncOddsButtonHighlights() {
+        // reset all odds buttons (hero pills and match cards)
+        document.querySelectorAll('.odds-pill, .odds-btn').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        selectedBets.forEach(bet => {
+          // match by data attributes
+          const selector = `.odds-pill[data-team="${bet.team}"][data-odd="${bet.oddsLabel}"], .odds-btn[data-team="${bet.team}"][data-odd="${bet.oddsLabel}"]`;
+          const el = document.querySelector(selector);
+          if (el) el.classList.add('selected');
+        });
+      }
+
+      // ------- ADD BET (from click) -------
+      function addBet(team, oddsValue, oddsLabel, matchName) {
+        // prevent duplicate same selection
+        const exists = selectedBets.some(b => b.team === team && b.oddsLabel === oddsLabel && b.match === matchName);
+        if (exists) {
+          // maybe remove? for simplicity, remove it (toggle)
+          selectedBets = selectedBets.filter(b => !(b.team === team && b.oddsLabel === oddsLabel && b.match === matchName));
+        } else {
+          selectedBets.push({
+            match: matchName,
+            team: team,
+            oddsLabel: oddsLabel,
+            oddsValue: oddsValue,
+          });
+        }
+        syncOddsButtonHighlights();
+        updateBetSlipUI();
+      }
+
+      // ------- EVENT LISTENERS -------
+      document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        updateWalletDisplay();
+        updateBetSlipUI();
+
+        // Tabs sliding indicator
+        const tabsContainer = document.getElementById('tabsContainer');
+        const slidingIndicator = document.getElementById('slidingIndicator');
+        const tabPills = document.querySelectorAll('.tab-pill');
+
+        function moveIndicator(activeTab) {
+          const rect = activeTab.getBoundingClientRect();
+          const containerRect = tabsContainer.getBoundingClientRect();
+          const left = rect.left - containerRect.left + tabsContainer.scrollLeft;
+          slidingIndicator.style.width = rect.width + 'px';
+          slidingIndicator.style.left = left + 'px';
+        }
+
+        tabPills.forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            tabPills.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            moveIndicator(tab);
+            // filter logic (visual only, data filtering not fully implemented)
+            const tabName = tab.dataset.tab;
+            document.querySelectorAll('.match-card').forEach(card => {
+              if (tabName === 'All' || tabName === 'Trending') {
+                card.style.display = 'block';
+              } else if (tabName === 'Live') {
+                card.style.display = card.dataset.live === 'true' ? 'block' : 'none';
+              } else {
+                card.style.display = card.dataset.league === tabName ? 'block' : 'none';
+              }
+            });
+          });
+        });
+
+        // set initial indicator
+        setTimeout(() => {
+          const activeTab = document.querySelector('.tab-pill.active');
+          if (activeTab) moveIndicator(activeTab);
+        }, 50);
+        window.addEventListener('resize', () => {
+          const activeTab = document.querySelector('.tab-pill.active');
+          if (activeTab) moveIndicator(activeTab);
+        });
+
+        // Odds buttons (hero + match) – add to bet slip
+        document.querySelectorAll('.odds-pill, .odds-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const team = btn.dataset.team;
+            const oddLabel = btn.dataset.odd;
+            const oddsValue = parseFloat(btn.textContent) || 0;
+            let matchName = btn.dataset.match;
+            if (!matchName) {
+              // hero card – derive match from parent
+              const heroCard = btn.closest('.hero-card');
+              if (heroCard) {
+                const teams = heroCard.querySelectorAll('.team-badge');
+                if (teams.length >= 2) {
+                  const t1 = teams[0].textContent.trim().replace(/[A-Z]{2,3}/, '').trim();
+                  const t2 = teams[1].textContent.trim().replace(/[A-Z]{2,3}/, '').trim();
+                  matchName = `${t1} vs ${t2}`;
+                } else {
+                  matchName = 'Match';
+                }
+              } else {
+                matchName = 'Match';
+              }
+            }
+            addBet(team, oddsValue, oddLabel, matchName);
+          });
+        });
+
+        // remove selection from bet slip (delegated)
+        betSelections.addEventListener('click', (e) => {
+          const removeBtn = e.target.closest('.remove-selection');
+          if (removeBtn) {
+            const index = removeBtn.dataset.index;
+            selectedBets.splice(index, 1);
+            syncOddsButtonHighlights();
+            updateBetSlipUI();
+          }
+        });
+
+        // Bet slip drawer open/close
+        const drawer = document.getElementById('betSlipDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        const betSlipDockBtn = document.getElementById('betSlipDockBtn');
+        const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+        function openDrawer() {
+          drawer.classList.add('open');
+          overlay.classList.add('active');
+        }
+        function closeDrawer() {
+          drawer.classList.remove('open');
+          overlay.classList.remove('active');
+        }
+
+        betSlipDockBtn.addEventListener('click', openDrawer);
+        closeDrawerBtn.addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', closeDrawer);
+
+        // Sliding toggle Single/Parlay
+        const toggleOptions = document.querySelectorAll('.toggle-option');
+        const toggleIndicator = document.getElementById('toggleIndicator');
+        toggleOptions.forEach(opt => {
+          opt.addEventListener('click', () => {
+            toggleOptions.forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            const mode = opt.dataset.mode;
+            currentMode = mode;
+            if (mode === 'single') {
+              toggleIndicator.style.left = '3px';
+              toggleIndicator.style.width = 'calc(50% - 3px)';
+            } else {
+              toggleIndicator.style.left = 'calc(50%)';
+              toggleIndicator.style.width = 'calc(50% - 3px)';
+            }
+            updateBetSlipUI();
+          });
+        });
+
+        // Stake chips
+        document.querySelectorAll('.stake-chip').forEach(chip => {
+          chip.addEventListener('click', () => {
+            const stakeVal = chip.dataset.stake;
+            if (stakeVal === 'max') {
+              currentStake = walletBalance;
+            } else {
+              currentStake = parseFloat(stakeVal);
+            }
+            updateBetSlipUI();
+          });
+        });
+
+        // Place bet
+        document.getElementById('placeBetBtn').addEventListener('click', () => {
+          if (selectedBets.length === 0) {
+            showToast('Add at least one pick');
+            return;
+          }
+          if (currentStake <= 0) {
+            showToast('Select a stake amount');
+            return;
+          }
+          if (currentStake > walletBalance) {
+            showToast('Insufficient balance');
+            return;
+          }
+          // Place bet (deduct balance)
+          walletBalance -= currentStake;
+          updateWalletDisplay();
+          showToast('Bet placed! Good luck 🍀');
+          // Clear bets (optional)
+          selectedBets = [];
+          currentStake = 0;
+          syncOddsButtonHighlights();
+          updateBetSlipUI();
+          closeDrawer();
+        });
+
+        // Dock navigation (active state)
+        const dockItems = document.querySelectorAll('.dock-item');
+        dockItems.forEach(item => {
+          item.addEventListener('click', () => {
+            if (item.dataset.dock === 'betslip') {
+              openDrawer();
+              return;
+            }
+            dockItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            if (item.dataset.dock !== 'betslip') {
+              // just visual
+            }
+          });
+        });
+        // set home active initially
+        document.querySelector('.dock-item[data-dock="home"]').classList.add('active');
+
+        // Deposit button
+        document.getElementById('depositBtn').addEventListener('click', () => {
+          walletBalance += 100;
+          updateWalletDisplay();
+          showToast('$100 added to wallet');
+        });
+
+        // profile btn toast
+        document.getElementById('profileBtn').addEventListener('click', () => {
+          showToast('Profile coming soon');
+        });
+
+        // init sync
+        syncOddsButtonHighlights();
+        updateBetSlipUI();
+        lucide.createIcons();
+      });
+
+      // Re-sync odds highlight after any change
+      window.addEventListener('load', () => {
+        lucide.createIcons();
+        // sync after load
+        setTimeout(() => {
+          syncOddsButtonHighlights();
+        }, 100);
+      });
+    })();
+  </script>
+</body>
+</html>
